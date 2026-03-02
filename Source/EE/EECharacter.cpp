@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "EE.h"
+#include "Blueprint/UserWidget.h"
 
 AEECharacter::AEECharacter()
 {
@@ -48,6 +49,21 @@ AEECharacter::AEECharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+}
+
+void AEECharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (CoinWidgetClass)
+	{
+		CoinWidget = CreateWidget<UUserWidget>(GetWorld(), CoinWidgetClass);
+
+		if (CoinWidget)
+		{
+			CoinWidget->AddToViewport();
+		}
+	}
 }
 
 void AEECharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -130,4 +146,12 @@ void AEECharacter::DoJumpEnd()
 {
 	// signal the character to stop jumping
 	StopJumping();
+}
+
+void AEECharacter::AddCoin()
+{
+	CoinCount++;
+
+	// Notify UI
+	OnCoinsChanged.Broadcast(CoinCount);
 }

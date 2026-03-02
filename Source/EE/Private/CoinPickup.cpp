@@ -2,9 +2,10 @@
 
 
 #include "CoinPickup.h"
-
+#include "PlatformerCharacter.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/RotatingMovementComponent.h"
+#include "EECharacter.h"
 
 // Sets default values
 ACoinPickup::ACoinPickup()
@@ -33,14 +34,19 @@ ACoinPickup::ACoinPickup()
 }
 
 void ACoinPickup::OnBeginOverlapComponentEvent(
-	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
 )
 {
-	if(!Cast<ACharacter>(OtherActor))
+	AEECharacter* Player = Cast<AEECharacter>(OtherActor);
+
+	if (Player)
 	{
-		return;
+		Player->AddCoin();
 		Destroy();
 	}
 }
-

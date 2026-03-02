@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "EECharacter.generated.h"
+#include "Blueprint/UserWidget.h"
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -49,15 +50,33 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCoinsChanged, int32, NewCoinCount);
+
 public:
 
-	/** Constructor */
-	AEECharacter();	
+	// Called when player picks up a coin
+	UFUNCTION(BlueprintCallable)
+	void AddCoin();
+
+	// Delegate for UI updates
+	UPROPERTY(BlueprintAssignable)
+	FOnCoinsChanged OnCoinsChanged;
 
 protected:
 
-	/** Initialize input action bindings */
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void BeginPlay() override;
+
+	// Current coin amount
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coins")
+	int32 CoinCount = 0;
+
+	// UI Widget class set in Blueprint
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> CoinWidgetClass;
+
+	// Runtime instance of widget
+	UPROPERTY()
+	UUserWidget* CoinWidget;
 
 protected:
 
